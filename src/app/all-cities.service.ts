@@ -4,14 +4,14 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class AllCitiesService {
-
-   allCities : any = 
+   allCitiesData : any = 
 {
         "type": "FeatureCollection",
         "features": [
-        { "type": "Feature",
+        { 
+         "type": "Feature",
          "properties": { "NAME": "TORSHAVN" },
-          "geometry": { 
+         "geometry": { 
             "type": "Polygon",
              "coordinates": [
                 [ 
@@ -48,7 +48,7 @@ export class AllCitiesService {
         { "type": "Feature", "properties": { "NAME": "MATARENGI" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 23.67253, 66.3795 ], [ 23.66694, 66.37936 ], [ 23.66247, 66.38123 ], [ 23.66211, 66.38125 ], [ 23.65111, 66.38175 ], [ 23.63445, 66.39147 ], [ 23.63342, 66.39422 ], [ 23.6415, 66.39692 ], [ 23.65405, 66.39772 ], [ 23.6608, 66.39631 ], [ 23.66428, 66.39767 ], [ 23.67122, 66.39725 ], [ 23.67167, 66.39689 ], [ 23.66586, 66.3942 ], [ 23.67136, 66.38936 ], [ 23.67253, 66.3795 ] ] ] } },
         { "type": "Feature", 
         "properties": { "NAME": "MO" },
-         "geometry": { 
+        "geometry": { 
           "type": "Polygon",
           "coordinates": [ 
             [
@@ -58,104 +58,13 @@ export class AllCitiesService {
         }
        },
         ]
+
 }
-
-usaCapitals : any = 
-{
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -86.279118,
-          32.361538
-        ]
-      },
-      "properties": {
-        "state": "Alabama",
-        "name": "Montgomery",
-        "population": 199518
+   nameAndCoordinates = this.allCitiesData.features.map((d:any)=>(
+      {
+        cityName :d['properties']['NAME'] ,
+        coordinates :d.geometry.coordinates[0][0] 
       }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -134.41974,
-          58.301935
-        ]
-      },
-      "properties": {
-        "state": "Alaska",
-        "name": "Juneau",
-        "population": 32094
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -112.073844,
-          33.448457
-        ]
-      },
-      "properties": {
-        "state": "Arizona",
-        "name": "Phoenix",
-        "population": 1626078
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -92.331122,
-          34.736009
-        ]
-      },
-      "properties": {
-        "state": "Arkansas",
-        "name": "Little Rock",
-        "population": 198606
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -121.468926,
-          38.555605
-        ]
-      },
-      "properties": {
-        "state": "California",
-        "name": "Sacramento",
-        "population": 501901
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -104.984167,
-          39.7391667
-        ]
-      },
-      "properties": {
-        "state": "Colorado",
-        "name": "Denver",
-        "population": 704621
-      }
-    }
-    ]
-  }
-
+      ))
 
 }

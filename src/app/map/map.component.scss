@@ -1,17 +1,31 @@
-.map-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: 60px;
-     
+.map{
+  display: flex;
+  .map-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 700px;
+    height: 400px;
+    margin: 0 20px;
+    input{
+      
+    }
   }
-  
   .map-frame {
+    margin-top: 20px;
     border: 2px solid black;
     height: 100%;
   }
+  .marker-settings{
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    border: 1px dotted black;
+    &:nth-child(1n){
+      max-width: 200px;
+    }
+  }
+}
   
   #map {
     height: 100%;

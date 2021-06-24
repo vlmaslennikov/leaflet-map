@@ -1,7 +1,40 @@
 
-<div class="map-container">
-    <input class="input-search" type="search">
+<section class="map">
+  <div class="map-container">
+    <div class="search-block">
+      <input class="input-search" type="search" (input)="citiesSearch(inputSearch.value.trim())" #inputSearch >
+      <ul>
+        <li *ngFor="let place of coincidenceSearch" (click)="goToPlace(place.coordinates)" >{{place.cityName}}</li>
+      </ul>
+    </div>
+    
     <div class="map-frame">
       <div id="map"></div>
     </div>
-</div>
+  </div>
+  <nav class="marker-navigation">
+    <div class="marker-settings">
+      <label> Latitude : 
+        <input type="number" min="-90" max="90" placeholder="latitude" #latitude>
+      </label>
+      <label> Longitude : 
+        <input type="number" min="-180" max="180" placeholder="longitude" #longitude>
+      </label>
+      <button (click)="addMarker([latitude.value,longitude.value])">Add maker by coordinates</button>
+    </div>
+    <ul>All markers : {{allMarkers.length}} 
+      <li *ngFor="let marker of allMarkers;index as index"> 
+        MARKER {{index}} | 
+        <label> latitude : 
+          <input type="number" min="-90" max="90" placeholder="latitude" [(ngModel)]='allMarkers[index].coordinates'>
+        </label>
+        <label> longitude : 
+          <input type="number" min="-180" max="180" placeholder="longitude" >
+        </label>
+      </li>
+
+    </ul>
+  </nav>
+
+</section>
+
