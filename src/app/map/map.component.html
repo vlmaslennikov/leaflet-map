@@ -20,17 +20,21 @@
       <label> Longitude : 
         <input type="number" min="-180" max="180" placeholder="longitude" #longitude>
       </label>
-      <button (click)="addMarker([latitude.value,longitude.value])">Add maker by coordinates</button>
+      <button (click)="addMarker({lat:latitude.value,lng:longitude.value})">Add maker by coordinates</button>
     </div>
     <ul>All markers : {{allMarkers.length}} 
-      <li *ngFor="let marker of allMarkers;index as index"> 
-        MARKER {{index}} | 
+      <hr>
+      <li *ngFor="let marker of allMarkers;index as i"> 
+        MARKER {{i+1}} 
+        <br>
         <label> latitude : 
-          <input type="number" min="-90" max="90" placeholder="latitude" [(ngModel)]='allMarkers[index].coordinates'>
+          <span  [textContent]="allMarkers[i].coordinates.lat"> </span>
         </label>
+        <br>
         <label> longitude : 
-          <input type="number" min="-180" max="180" placeholder="longitude" >
+          <span  [textContent]="allMarkers[i].coordinates.lng"> </span>
         </label>
+        <hr>
       </li>
 
     </ul>

@@ -4,7 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
-import { MarkerService } from './marker.service';
 
 @NgModule({
   declarations: [
@@ -15,7 +14,6 @@ import { MarkerService } from './marker.service';
     BrowserModule,
     FormsModule
   ],
-  providers: [MarkerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
