@@ -1,5 +1,9 @@
 import { Component, AfterViewInit } from "@angular/core";
 import { AllCitiesService } from "../all-cities.service";
+import { CoordinatesInObject } from "../interfaces/coordinates-in-object.interface";
+import { CoincidenceSearch } from "../interfaces/coincidence-search.inteface";
+import { Marker } from "../interfaces/marker.interface";
+
 import * as L from "leaflet";
 import "leaflet-draw";
 
@@ -9,65 +13,21 @@ const iconDefault = L.icon({
   iconSize: [25, 25],
 });
 L.Marker.prototype.options.icon = iconDefault;
-
 @Component({
   selector: "app-map",
   templateUrl: "./map.component.html",
   styleUrls: ["./map.component.scss"],
 })
 export class MapComponent implements AfterViewInit {
-  map: any;
-  allMarkers: any = [
-    { coordinates: { lat: 39.8282, lng: -98.5795 }, name: "Marker" },
-  ];
-  coincidenceSearch: any = [];
-  options: any = {
-    center: [39.8282, -98.5795],
-    zoom: 3,
-  };
-
+  map!: L.DrawMap;
+  allMarkers: Marker[] = [];
+  coincidenceSearch: CoincidenceSearch[] = [];
   constructor(private cities: AllCitiesService) {}
-
-  addMarker(coord: any, name: string) {
-    const markerId = Date.now();
-    this.allMarkers.push({
-      id: markerId,
-      coordinates: coord,
-      name: name,
-    });
-    let newMarker = L.marker(coord, { draggable: true })
-      .addTo(this.map)
-      .bindPopup(name)
-      .openPopup()
-      .on("drag", () => {
-        this.allMarkers.find(
-          (el: any) => el.id === markerId
-        ).coordinates = newMarker.getLatLng();
-      });
-  }
-
-  citiesSearch(value: string) {
-    console.log("value", value);
-    if (value == "") {
-      this.coincidenceSearch.length = 0;
-      return;
-    }
-    this.coincidenceSearch = this.cities.nameAndCoordinates.filter(
-      (city: any) => city.cityName.toLowerCase().includes(value.toLowerCase())
-    );
-  }
-  goToPlace(coordinates: any) {
-    console.log(coordinates);
-
-    const coord = this.getPolygonCenter(coordinates);
-
-    this.map.setView(coord);
-    this.map.setZoom(10);
-    this.coincidenceSearch.length = 0;
-  }
-
   initMap(): void {
-    this.map = L.map("map", this.options);
+    this.map = L.map("map", {
+      center: [39.8282, -98.5795],
+      zoom: 3,
+    });
     const tiles = L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       {
@@ -116,7 +76,7 @@ export class MapComponent implements AfterViewInit {
         const [lat1, lng1]: any = this.getPolygonCenter(
           e.layer.editing.latlngs[0][0]
         );
-        const latlnMean: any = {
+        const latlnMean: CoordinatesInObject = {
           lat: lat1,
           lng: lng1,
         };
@@ -127,28 +87,66 @@ export class MapComponent implements AfterViewInit {
       editableLayers.addLayer(layer);
     });
   }
+  addMarker(coord: any, name: string): void {
+    const markerId = Date.now();
+    this.allMarkers.push({
+      id: markerId,
+      name: name,
+      coordinates: coord,
+    });
+    const newMarker: L.Marker = L.marker(coord, { draggable: true })
+      .addTo(this.map)
+      .bindPopup(name)
+      .openPopup()
+      .on("drag", () => {
+        this.allMarkers.find(
+          (el: Marker) => el.id === markerId
+        )!.coordinates = newMarker.getLatLng();
+      });
+  }
 
-  getPolygonCenter(array: any, returnedType: string = "array") {
-    let lat: any;
-    let lng: any;
-    if (array[0].length) {
+  citiesSearch(value: string): void {
+    if (value == "") {
+      this.coincidenceSearch.length = 0;
+      return;
+    }
+    this.coincidenceSearch = this.cities.nameAndCoordinates.filter(
+      (place: CoincidenceSearch) =>
+        place.name.toLowerCase().includes(value.toLowerCase())
+    );
+  }
+
+  goToPlace(coordinates: number[][]): void {
+    const coord: any = this.getPolygonCenter(coordinates);
+    this.map.setView(coord);
+    this.map.setZoom(10);
+    this.coincidenceSearch.length = 0;
+  }
+
+  getPolygonCenter(
+    data: any,
+    returnedType: string = "array"
+  ): number[] | CoordinatesInObject {
+    let lat;
+    let lng;
+    if (data[0].length) {
       lat =
-        array.reduce((sum: any, current: any) => +sum + +current[0], 0) /
-        array.length;
+        data.reduce((sum: number, current: number[]) => +sum + +current[0], 0) /
+        data.length;
       lng =
-        array.reduce((sum: any, current: any) => +sum + +current[1], 0) /
-        array.length;
+        data.reduce((sum: number, current: number[]) => +sum + +current[1], 0) /
+        data.length;
       if (returnedType == "object-reverse") {
         return { lng: lat, lat: lng };
       }
       return [lng, lat];
     } else {
       lat =
-        array.reduce((sum: any, current: any) => +sum + +current.lat, 0) /
-        array.length;
+        data.reduce((sum: number, current: any) => +sum + +current.lat, 0) /
+        data.length;
       lng =
-        array.reduce((sum: any, current: any) => +sum + +current.lng, 0) /
-        array.length;
+        data.reduce((sum: number, current: any) => +sum + +current.lng, 0) /
+        data.length;
       return [lat, lng];
     }
   }

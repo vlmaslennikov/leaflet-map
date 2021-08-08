@@ -10,13 +10,12 @@
         </button>
       </div>
 
-
       <ul class="list-group countries-list overflow-scroll" *ngIf="coincidenceSearch.length!=0">
         <li class="list-group-item selected-country" *ngFor="let place of coincidenceSearch"
           (click)="goToPlace(place.coordinates)">
-          {{place.cityName}}
+          {{place.name}}
           <button class="btn btn-warning float-end"
-            (click)="addMarker(getPolygonCenter(place.coordinates,'object-reverse'),place.cityName)">
+            (click)="addMarker(getPolygonCenter(place.coordinates ,'object-reverse'),place.name)">
             <i class="bi bi-geo-alt"></i>Add marker
           </button>
         </li>
@@ -26,7 +25,9 @@
     <div class="map-frame">
       <div id="map"></div>
     </div>
+
   </div>
+
   <nav class="marker-navigation">
     <div class="marker-settings">
       <label> Name :
@@ -41,14 +42,14 @@
           aria-label="Sizing example input" #longitude>
       </label>
       <button class="btn btn-s btn-warning"
-        (click)="addMarker({lat:latitude.value,lng:longitude.value},markerName.value)">Add
+        (click)="addMarker({lat:+latitude.value,lng:+longitude.value},markerName.value)">Add
         maker</button>
     </div>
+
     <ul class="markers-list overflow-scroll ">
       <h4>All markers : {{allMarkers.length}}</h4>
       <li class="card" *ngFor="let marker of allMarkers"
         (click)="goToPlace([[marker.coordinates.lng,marker.coordinates.lat]])">
-
         <div class="card-body">
           <div class="d-flex justify-content-between">
             <h5 class="card-title">{{marker.name}}</h5>

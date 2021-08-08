@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { CoincidenceSearch } from "./interfaces/coincidence-search.inteface";
 
 @Injectable({
   providedIn: "root",
@@ -9879,8 +9880,10 @@ export class AllCitiesService {
     ],
   };
 
-  nameAndCoordinates = this.allCitiesData.features.map((data: any) => ({
-    cityName: data["properties"]["label"],
-    coordinates: data.geometry.coordinates[0],
-  }));
+  nameAndCoordinates: CoincidenceSearch[] = this.allCitiesData.features.map(
+    (data: any) => ({
+      name: data["properties"]["label"],
+      coordinates: data.geometry.coordinates[0],
+    })
+  );
 }
