@@ -1,44 +1,67 @@
-
 <section class="map">
   <div class="map-container">
-    <div class="search-block">
-      <input class="input-search" type="search" (input)="citiesSearch(inputSearch.value.trim())" #inputSearch >
-      <ul>
-        <li *ngFor="let place of coincidenceSearch" (click)="goToPlace(place.coordinates)" >{{place.cityName}}</li>
+    <div>
+      <div class="input-group">
+        <input class="input-search form-control" aria-label="Sizing example input" aria-describedb type="search"
+          placeholder="City name" (input)="citiesSearch(inputSearch.value.trim())" #inputSearch>
+        <button class="btn btn-outline-secondary btn-warning" type="button" id="button-addon2"
+          (click)="citiesSearch(inputSearch.value.trim())">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+
+
+      <ul class="list-group countries-list overflow-scroll" *ngIf="coincidenceSearch.length!=0">
+        <li class="list-group-item selected-country" *ngFor="let place of coincidenceSearch"
+          (click)="goToPlace(place.coordinates)">
+          {{place.cityName}}
+          <button class="btn btn-warning float-end"
+            (click)="addMarker(getPolygonCenter(place.coordinates,'object-reverse'),place.cityName)">
+            <i class="bi bi-geo-alt"></i>Add marker
+          </button>
+        </li>
       </ul>
     </div>
-    
+
     <div class="map-frame">
       <div id="map"></div>
     </div>
   </div>
   <nav class="marker-navigation">
     <div class="marker-settings">
-      <label> Latitude : 
-        <input type="number" min="-90" max="90" placeholder="latitude" #latitude>
+      <label> Name :
+        <input type="text" placeholder="name" class="form-control" aria-label="Sizing example input" #markerName>
       </label>
-      <label> Longitude : 
-        <input type="number" min="-180" max="180" placeholder="longitude" #longitude>
+      <label> Latitude :
+        <input type="number" min="-90" max="90" placeholder="latitude" class="form-control"
+          aria-label="Sizing example input" #latitude>
       </label>
-      <button (click)="addMarker({lat:latitude.value,lng:longitude.value})">Add maker by coordinates</button>
+      <label> Longitude :
+        <input type="number" min="-180" max="180" placeholder="longitude" class="form-control"
+          aria-label="Sizing example input" #longitude>
+      </label>
+      <button class="btn btn-s btn-warning"
+        (click)="addMarker({lat:latitude.value,lng:longitude.value},markerName.value)">Add
+        maker</button>
     </div>
-    <ul>All markers : {{allMarkers.length}} 
-      <hr>
-      <li *ngFor="let marker of allMarkers;index as i"> 
-        MARKER {{i+1}} 
-        <br>
-        <label> latitude : 
-          <span  [textContent]="allMarkers[i].coordinates.lat"> </span>
-        </label>
-        <br>
-        <label> longitude : 
-          <span  [textContent]="allMarkers[i].coordinates.lng"> </span>
-        </label>
-        <hr>
-      </li>
+    <ul class="markers-list overflow-scroll ">
+      <h4>All markers : {{allMarkers.length}}</h4>
+      <li class="card" *ngFor="let marker of allMarkers"
+        (click)="goToPlace([[marker.coordinates.lng,marker.coordinates.lat]])">
 
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <h5 class="card-title">{{marker.name}}</h5>
+          </div>
+          <h5 class="card-subtitle mb-2 text-muted"> latitude :
+            <span>{{marker.coordinates.lat}} </span>
+          </h5>
+          <h5 class="card-subtitle mb-2 text-muted"> longitude :
+            <span>{{marker.coordinates.lng}}</span>
+          </h5>
+        </div>
+      </li>
     </ul>
   </nav>
 
 </section>
-
