@@ -28,14 +28,14 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets" 
+              "src/assets"
             ],
             "styles": [
               "node_modules/leaflet/dist/leaflet.css",
-
               "node_modules/leaflet-draw/dist/leaflet.draw.css",
-
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/bootstrap/dist/css/bootstrap.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css"
             ],
             "scripts": []
           },
@@ -101,14 +101,13 @@
             "assets": [
               "src/favicon.ico",
               "src/assets"
-             
             ],
             "styles": [
               "node_modules/leaflet/dist/leaflet.css",
-
               "node_modules/leaflet-draw/dist/leaflet.draw.css",
-
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/bootstrap/dist/css/bootstrap.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css"
             ],
             "scripts": []
           }

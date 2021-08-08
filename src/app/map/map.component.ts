@@ -1,9 +1,9 @@
-import { Component, AfterViewInit } from '@angular/core';
-import { AllCitiesService } from '../all-cities.service';
-import * as L from 'leaflet';
-import 'leaflet-draw';
+import { Component, AfterViewInit } from "@angular/core";
+import { AllCitiesService } from "../all-cities.service";
+import * as L from "leaflet";
+import "leaflet-draw";
 
-const iconUrl = '../assets/images/location.png';
+const iconUrl = "../assets/images/location.png";
 const iconDefault = L.icon({
   iconUrl,
   iconSize: [25, 25],
@@ -11,57 +11,65 @@ const iconDefault = L.icon({
 L.Marker.prototype.options.icon = iconDefault;
 
 @Component({
-  selector: 'app-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss'],
+  selector: "app-map",
+  templateUrl: "./map.component.html",
+  styleUrls: ["./map.component.scss"],
 })
 export class MapComponent implements AfterViewInit {
   map: any;
-  allMarkers:any = [
-    {coordinates:{lat:39.8282, lng:-98.5795}}
-  ]
-  coincidenceSearch:any = []
-  options:any={
+  allMarkers: any = [
+    { coordinates: { lat: 39.8282, lng: -98.5795 }, name: "Marker" },
+  ];
+  coincidenceSearch: any = [];
+  options: any = {
     center: [39.8282, -98.5795],
-      zoom: 3,
+    zoom: 3,
+  };
+
+  constructor(private cities: AllCitiesService) {}
+
+  addMarker(coord: any, name: string) {
+    const markerId = Date.now();
+    this.allMarkers.push({
+      id: markerId,
+      coordinates: coord,
+      name: name,
+    });
+    let newMarker = L.marker(coord, { draggable: true })
+      .addTo(this.map)
+      .bindPopup(name)
+      .openPopup()
+      .on("drag", () => {
+        this.allMarkers.find(
+          (el: any) => el.id === markerId
+        ).coordinates = newMarker.getLatLng();
+      });
   }
 
-  constructor(
-    private cities: AllCitiesService,
-  ) {}
-
-  addMarker(coord:any){
-    const markerId =Date.now();
-    this.allMarkers.push(
-      {
-        id:markerId,
-        coordinates:coord
-      }
-    )
-    let newMarker = L.marker( coord, { draggable: true }).addTo(this.map).on('drag', ()=> {
-      this.allMarkers.find((el:any)=>el.id===markerId).coordinates=newMarker.getLatLng()
-    console.log('drag',this.allMarkers.find((el:any)=>el.id===markerId));
-    console.log('newMarker.getLatLng()',newMarker.getLatLng());
-    } )
-    console.log(this.allMarkers);
-    
-    
+  citiesSearch(value: string) {
+    console.log("value", value);
+    if (value == "") {
+      this.coincidenceSearch.length = 0;
+      return;
+    }
+    this.coincidenceSearch = this.cities.nameAndCoordinates.filter(
+      (city: any) => city.cityName.toLowerCase().includes(value.toLowerCase())
+    );
   }
+  goToPlace(coordinates: any) {
+    console.log(coordinates);
 
-  citiesSearch(value:string){
-    this.coincidenceSearch = this.cities.nameAndCoordinates.filter((city:any)=>city.cityName.includes(value));
-    console.log('sfgfhnsths');
-  }
-  goToPlace(coordinates:any){
-    this.map.setView(this.getPolygonCenter(coordinates));
+    const coord = this.getPolygonCenter(coordinates);
+
+    this.map.setView(coord);
     this.map.setZoom(10);
-    this.coincidenceSearch.length=0
+    this.coincidenceSearch.length = 0;
   }
 
   initMap(): void {
-    this.map = L.map('map', this.options);
+    this.map = L.map("map", this.options);
     const tiles = L.tileLayer(
-      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       {
         maxZoom: 18,
         minZoom: 3,
@@ -74,24 +82,24 @@ export class MapComponent implements AfterViewInit {
     this.map.addLayer(editableLayers);
 
     const drawPluginOptions: L.Control.DrawConstructorOptions = {
-      position: 'topright',
+      position: "topright",
       draw: {
         polyline: false,
         polygon: {
           allowIntersection: false,
           drawError: {
-            color: '#e1e100',
+            color: "#e1b800",
             message:
-              '<strong>Polygon draw does not allow intersections!<strong> (allowIntersection: false)', // Message that will show when intersect
+              "<strong>Polygon draw does not allow intersections!<strong> (allowIntersection: false)",
           },
           shapeOptions: {
-            color: '#bada55',
+            color: "#e1b800",
           },
         },
-        circle: false,  
-        circlemarker:false,
+        circle: false,
+        circlemarker: false,
         rectangle: false,
-        marker: false
+        marker: false,
       },
       edit: {
         featureGroup: editableLayers,
@@ -100,32 +108,49 @@ export class MapComponent implements AfterViewInit {
     };
     const drawControl = new L.Control.Draw(drawPluginOptions);
     this.map.addControl(drawControl);
-    this.map.on('draw:created',  (e: any) => {
+    this.map.on("draw:created", (e: any) => {
       const type = e.layerType;
       const layer = e.layer;
-      const latlnMean : any = {coordinates:{lat:this.getPolygonCenter(e.layer.editing.latlngs[0][0]),lng:this.getPolygonCenter(e.layer.editing.latlngs[0][0])}};
-      console.log('e.layer.editing.latlngs', {lat:this.getPolygonCenter(e.layer.editing.latlngs[0][0]),lng:this.getPolygonCenter(e.layer.editing.latlngs[0][0])});
-      
-      if (type === 'polygon') {
-        layer.on('click', 
-        ()=> this.addMarker(latlnMean)
-        )
+
+      if (type === "polygon") {
+        const [lat1, lng1]: any = this.getPolygonCenter(
+          e.layer.editing.latlngs[0][0]
+        );
+        const latlnMean: any = {
+          lat: lat1,
+          lng: lng1,
+        };
+        layer.on("click", () => {
+          this.addMarker(latlnMean, `polygon center # ${Date.now()}`);
+        });
       }
       editableLayers.addLayer(layer);
     });
   }
 
-  getPolygonCenter(array:any){
-    let lat :any;
-    let lng :any;
-    if(array[0].length){
-       lat = array.reduce((sum:any,current:any )=>+sum + +current[0],0)/array.length;
-       lng = array.reduce((sum:any,current:any )=>+sum + +current[1],0)/array.length;
-    }else{
-       lat = array.reduce((sum:any,current:any )=>+sum + +current.lat,0)/array.length;
-       lng = array.reduce((sum:any,current:any )=>+sum + +current.lng,0)/array.length;
+  getPolygonCenter(array: any, returnedType: string = "array") {
+    let lat: any;
+    let lng: any;
+    if (array[0].length) {
+      lat =
+        array.reduce((sum: any, current: any) => +sum + +current[0], 0) /
+        array.length;
+      lng =
+        array.reduce((sum: any, current: any) => +sum + +current[1], 0) /
+        array.length;
+      if (returnedType == "object-reverse") {
+        return { lng: lat, lat: lng };
+      }
+      return [lng, lat];
+    } else {
+      lat =
+        array.reduce((sum: any, current: any) => +sum + +current.lat, 0) /
+        array.length;
+      lng =
+        array.reduce((sum: any, current: any) => +sum + +current.lng, 0) /
+        array.length;
+      return [lat, lng];
     }
-    return [lat, lng]
   }
 
   ngAfterViewInit(): void {
